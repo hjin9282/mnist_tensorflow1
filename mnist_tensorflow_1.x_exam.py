@@ -1,8 +1,10 @@
 import tensorflow as tf
 import keras
-import pandas ##
-import numpy as np
+import pandas
+import numpy
+import tensorflow.compat.v1 as tf
 
+tf.disable_v2_behavior()
 
 # Model Parameters
 learning_rate = 0.001
@@ -66,7 +68,7 @@ correct_pred = tf.equal(tf.argmax(logits, 1), tf.argmax(Y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 # Initialize variables
-#init = tf.global_variables_initializer() # 변수 초기화 방식 변경
+init = tf.global_variables_initializer()
 total_batch = x_train.shape[0]//batch_size
 
 # Create a Dataset object for batching & batch size iterator generation
@@ -75,36 +77,31 @@ iterator = tf.data.make_initializable_iterator(dataset)
 next_batch = iterator.get_next()
 
 # Start Training
-#with tf.Session() as sess:  ####### 세션 제거
-#    sess.run(init)
-#    sess.run(iterator.initializer)
-result = tensor.np()
-
-for epoch in range(num_epochs):
-    avg_loss = 0.
-    for i in range(total_batch):
-#            batch_x, batch_y = sess.run(next_batch) ##
-        batch_x, batch_y = result
-        # training logic here...
-#            _, l = sess.run([train_op, loss_op], feed_dict={X: batch_x, Y: batch_y})   ##
-        _, l = result([train_op, loss_op], feed_dict={X: batch_x, Y: batch_y}) ##
-        avg_loss += l / total_batch
-
-    
-    # Display logs per epoch
-#    acc = sess.run(accuracy, feed_dict={X: x_test, Y: y_test}) ##
-    acc = result(accuracy, feed_dict={X: x_test, Y: y_test}) ##
-    print("Epoch:", '%02d' % (epoch+1), "Loss:", "{:.4f}".format(avg_loss), "Accuracy:", "{:.4f}".format(acc)+"%")
-
-    # Re-initialize iterator for next epoch (essential!)
+with tf.Session() as sess:
+    sess.run(init)
     sess.run(iterator.initializer)
 
-# Calculate accuracy for MNIST test images
-#    print("Final Test Accuracy:", sess.run(accuracy, feed_dict={X: x_test, Y: y_test}),"%") ##
-print("Final Test Accuracy:", result(accuracy, feed_dict={X: x_test, Y: y_test}),"%") ##
-print()
-print("Tensorflow:",tf.__version__)
+    for epoch in range(num_epochs):
+        avg_loss = 0.
+        for i in range(total_batch):
+            batch_x, batch_y = sess.run(next_batch)
+            # training logic here...
+            _, l = sess.run([train_op, loss_op], feed_dict={X: batch_x, Y: batch_y})
+            avg_loss += l / total_batch
 
+        
+        # Display logs per epoch
+        acc = sess.run(accuracy, feed_dict={X: x_test, Y: y_test})
+        print("Epoch:", '%02d' % (epoch+1), "Loss:", "{:.4f}".format(avg_loss), "Accuracy:", "{:.4f}".format(acc)+"%")
+
+        # Re-initialize iterator for next epoch (essential!)
+        sess.run(iterator.initializer)
+
+    # Calculate accuracy for MNIST test images
+    print("Final Test Accuracy:", sess.run(accuracy, feed_dict={X: x_test, Y: y_test}),"%")
+    print()
+    print("Tensorflow:",tf.__version__)
+    
 data = {
 '이름': ['방현진'],
 '학번': [2413610],
@@ -115,3 +112,4 @@ print()
 df = pandas.DataFrame(data)
 print(df)
 print()
+    
