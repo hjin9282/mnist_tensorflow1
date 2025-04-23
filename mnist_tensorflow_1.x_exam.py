@@ -103,7 +103,7 @@ for epoch in range(num_epochs):
 #    print("Final Test Accuracy:", sess.run(accuracy, feed_dict={X: x_test, Y: y_test}),"%") ##
 print("Final Test Accuracy:", result(accuracy, feed_dict={X: x_test, Y: y_test}),"%") ##
 print()
-print("Tensorflow:",tf._version_)
+print("Tensorflow:",tf.__version__)
 
 data = {
 '이름': ['방현진'],
@@ -115,4 +115,3 @@ print()
 df = pandas.DataFrame(data)
 print(df)
 print()
-
